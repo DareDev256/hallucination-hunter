@@ -15,8 +15,11 @@ export function useProgress(categories?: Category[]) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setProgress(getProgress());
-    setIsLoading(false);
+    const loaded = getProgress();
+    requestAnimationFrame(() => {
+      setProgress(loaded);
+      setIsLoading(false);
+    });
   }, []);
 
   const earnXP = useCallback((amount: number) => {

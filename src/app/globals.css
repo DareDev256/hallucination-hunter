@@ -183,3 +183,111 @@ body {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ─── NOIR DETECTIVE THEME ─── */
+
+/* Spotlight — radial vignette from center */
+.spotlight {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 40%,
+    transparent 0%,
+    rgba(10, 10, 21, 0.4) 50%,
+    rgba(10, 10, 21, 0.85) 100%
+  );
+  z-index: 1;
+}
+
+/* Case file — dossier container */
+.case-file {
+  position: relative;
+  z-index: 2;
+  background: rgba(10, 10, 21, 0.7);
+  border: 1px solid var(--game-secondary);
+  border-left: 3px solid var(--game-primary);
+  padding: 1.5rem;
+  backdrop-filter: blur(2px);
+}
+
+/* ─── CLAIM INTERACTION ─── */
+
+/* Inline claim spans — the core mechanic */
+.claim-span {
+  cursor: pointer;
+  padding: 2px 4px;
+  margin: 0 1px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease-out;
+  font: inherit;
+  display: inline;
+  background: none;
+  text-align: left;
+}
+
+.claim-span--neutral {
+  color: var(--game-accent);
+  border-bottom-color: var(--game-secondary);
+}
+
+.claim-span--neutral:hover {
+  background: rgba(44, 62, 80, 0.3);
+  border-bottom-color: var(--game-primary);
+}
+
+.claim-span--flagged {
+  color: var(--game-primary);
+  border-bottom-color: var(--game-primary);
+  background: rgba(231, 76, 60, 0.1);
+  text-decoration: line-through;
+  text-decoration-color: var(--game-primary);
+}
+
+.claim-span--flagged:hover {
+  background: rgba(231, 76, 60, 0.2);
+}
+
+/* Legend chips */
+.claim-chip {
+  font-family: monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  display: inline-block;
+}
+
+.claim-chip--unflagged {
+  color: var(--game-accent);
+  border-bottom: 2px solid var(--game-secondary);
+}
+
+.claim-chip--flagged {
+  color: var(--game-primary);
+  border-bottom: 2px solid var(--game-primary);
+  text-decoration: line-through;
+  text-decoration-color: var(--game-primary);
+}
+
+/* ─── VERDICT DISPLAY ─── */
+
+.verdict-row {
+  padding: 0.75rem;
+  border-left: 3px solid transparent;
+}
+
+.verdict-row--tp { border-left-color: var(--game-success); background: rgba(68, 255, 68, 0.03); }
+.verdict-row--tn { border-left-color: var(--game-secondary); background: rgba(44, 62, 80, 0.1); }
+.verdict-row--fp { border-left-color: var(--game-error); background: rgba(255, 68, 68, 0.03); }
+.verdict-row--fn { border-left-color: var(--game-warning); background: rgba(255, 255, 0, 0.03); }
+
+.verdict-badge {
+  font-family: "Press Start 2P", monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.verdict-row--tp .verdict-badge { color: var(--game-success); }
+.verdict-row--tn .verdict-badge { color: var(--game-accent); opacity: 0.5; }
+.verdict-row--fp .verdict-badge { color: var(--game-error); }
+.verdict-row--fn .verdict-badge { color: var(--game-warning); }
