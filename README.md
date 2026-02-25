@@ -11,6 +11,8 @@ Part of the [Passionate Learning](https://github.com/DareDev256) game series (Ga
 3. Submit your verdict — the game reveals which claims were true vs fabricated
 4. Score based on precision AND recall (trigger-happy flagging is punished)
 
+Passages are served in **diversity-picked order** — categories alternate so you never see the same type back-to-back, with shuffling within each category for variety.
+
 ## Scoring
 
 | Result | Points | Meaning |

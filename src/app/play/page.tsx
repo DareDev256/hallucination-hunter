@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { passages } from "@/data/passages";
 import {
   parsePassage,
   scoreClaims,
@@ -12,17 +11,17 @@ import {
 } from "@/types/hallucination";
 import { Button } from "@/components/ui/Button";
 import { useProgress } from "@/hooks/useProgress";
+import { usePassageSelection } from "@/hooks/usePassageSelection";
 
 type Phase = "briefing" | "investigating" | "results";
 
 export default function PlayPage() {
   const [phase, setPhase] = useState<Phase>("briefing");
-  const [passageIdx, setPassageIdx] = useState(0);
   const [flagged, setFlagged] = useState<Set<string>>(new Set());
   const [results, setResults] = useState<CaseResults | null>(null);
   const { earnXP } = useProgress();
+  const { current: passage, played, total, advance } = usePassageSelection();
 
-  const passage = passages[passageIdx];
   const segments = useMemo(() => parsePassage(passage.prompt), [passage]);
   const claimCount = useMemo(
     () => Object.keys(passage.claimAnnotations).length,
@@ -46,12 +45,11 @@ export default function PlayPage() {
   }, [passage, flagged, earnXP]);
 
   const nextCase = useCallback(() => {
-    const next = (passageIdx + 1) % passages.length;
-    setPassageIdx(next);
+    advance();
     setFlagged(new Set());
     setResults(null);
     setPhase("briefing");
-  }, [passageIdx]);
+  }, [advance]);
 
   return (
     <main className="min-h-screen flex flex-col items-center p-4 md:p-8 relative">
@@ -66,7 +64,8 @@ export default function PlayPage() {
           &lt; HQ
         </Link>
         <span className="font-mono text-[10px] text-game-secondary tracking-widest uppercase">
-          Case {passage.id} — {passage.category.replace(/-/g, " ")}
+          Case {passage.id} — {passage.category.replace(/-/g, " ")}{" "}
+          <span className="text-game-accent/20">({played + 1}/{total})</span>
         </span>
       </div>
 

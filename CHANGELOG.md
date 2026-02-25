@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.0] — 2026-02-25
+
+### Changed
+- Extracted passage selection from play page into `usePassageSelection` hook
+- Passages now served in category-diverse order (round-robin interleaving) instead of sequential
+- Shuffled within categories for variety across sessions
+- Queue auto-rebuilds when all passages exhausted, avoiding same-category start
+- Removed `passageIdx` state from play page — selection logic fully encapsulated
+- Added session progress counter (e.g. "3/5") to case header
+
 ## [0.2.0] — 2026-02-22
 
 ### Added
