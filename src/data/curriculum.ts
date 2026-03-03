@@ -1,62 +1,93 @@
-import { ContentItem, Category } from "@/types/game";
+import { Category } from "@/types/game";
+import { passages } from "@/data/passages";
 
-// ─── TEMPLATE CURRICULUM ───
-// Each game REPLACES this entire file with its own content.
-// This serves as the structural example.
+// ─── HALLUCINATION HUNTER CURRICULUM ───
+// Categories derived from actual passages in passages.ts.
+// Each level groups passages by difficulty within a category.
 
 export const categories: Category[] = [
   {
-    id: "getting-started",
-    title: "Getting Started",
-    description: "Your first steps",
-    icon: ">>",
+    id: "obvious-fabrications",
+    title: "Obvious Fabrications",
+    description: "Fake citations, invented statistics, and confidently wrong attributions. The AI equivalent of a forged passport.",
+    icon: "!!",
     levels: [
       {
         id: 1,
-        name: "Basics",
-        items: ["gs-001", "gs-002", "gs-003", "gs-004", "gs-005"],
+        name: "Rookie Cases",
+        items: passages
+          .filter((p) => p.category === "obvious-fabrications" && p.difficulty === "easy")
+          .map((p) => p.id),
         requiredXp: 0,
         gameMode: "standard",
       },
       {
         id: 2,
-        name: "Fundamentals",
-        items: ["gs-006", "gs-007", "gs-008", "gs-009", "gs-010"],
+        name: "Seasoned Cases",
+        items: passages
+          .filter((p) => p.category === "obvious-fabrications" && p.difficulty === "medium")
+          .map((p) => p.id),
         requiredXp: 50,
+        gameMode: "standard",
+      },
+      {
+        id: 3,
+        name: "Expert Cases",
+        items: passages
+          .filter((p) => p.category === "obvious-fabrications" && p.difficulty === "hard")
+          .map((p) => p.id),
+        requiredXp: 150,
+        gameMode: "standard",
+      },
+    ],
+  },
+  {
+    id: "plausible-but-wrong",
+    title: "Plausible But Wrong",
+    description: "Subtly incorrect claims wrapped in truth. These pass the gut check but fail the fact check.",
+    icon: "?!",
+    levels: [
+      {
+        id: 1,
+        name: "Rookie Cases",
+        items: passages
+          .filter((p) => p.category === "plausible-but-wrong" && p.difficulty === "easy")
+          .map((p) => p.id),
+        requiredXp: 0,
+        gameMode: "standard",
+      },
+      {
+        id: 2,
+        name: "Seasoned Cases",
+        items: passages
+          .filter((p) => p.category === "plausible-but-wrong" && p.difficulty === "medium")
+          .map((p) => p.id),
+        requiredXp: 100,
+        gameMode: "standard",
+      },
+      {
+        id: 3,
+        name: "Expert Cases",
+        items: passages
+          .filter((p) => p.category === "plausible-but-wrong" && p.difficulty === "hard")
+          .map((p) => p.id),
+        requiredXp: 200,
         gameMode: "standard",
       },
     ],
   },
 ];
 
-export const items: ContentItem[] = [
-  {
-    id: "gs-001",
-    prompt: "This is the question or scenario the player sees",
-    answer: "This is the correct answer or action",
-    category: "getting-started",
-    difficulty: "easy",
-    enrichment: {
-      whyItMatters: "Explains why this concept matters in the real world",
-      realWorldExample: "A concrete example of this concept in action",
-      proTip: "An advanced insight for those who want to go deeper",
-    },
-  },
-  // Add more items...
-];
-
-// Helper: get items by category
-export function getItemsByCategory(categoryId: string): ContentItem[] {
-  return items.filter((item) => item.category === categoryId);
+// Helper: get passages by category
+export function getItemsByCategory(categoryId: string): string[] {
+  return passages.filter((p) => p.category === categoryId).map((p) => p.id);
 }
 
-// Helper: get items by level
-export function getItemsByLevel(categoryId: string, levelId: number): ContentItem[] {
+// Helper: get passage IDs by level
+export function getItemsByLevel(categoryId: string, levelId: number): string[] {
   const category = categories.find((c) => c.id === categoryId);
   if (!category) return [];
   const level = category.levels.find((l) => l.id === levelId);
   if (!level) return [];
-  return level.items
-    .map((id) => items.find((item) => item.id === id))
-    .filter((item): item is ContentItem => item !== undefined);
+  return level.items;
 }
