@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0] — 2026-03-05
+
+### Added
+- Phase-reactive Spotlight component (`Spotlight.tsx`) with three modes: ambient, focused, interrogation
+- Spotlight tightens from wide vignette → focused cone → harsh interrogation beam as game progresses
+- Subtle breathing animation during investigation phase (4s ease-in-out cycle)
+- Red-tinged edge pulse during results phase for dramatic noir interrogation feel
+- Smooth 0.8s CSS transitions between spotlight phases
+- Respects `prefers-reduced-motion` via existing global media query
+
+### Changed
+- Replaced static `.spotlight` div with dynamic `<Spotlight>` component on landing and play pages
+- Split spotlight CSS into phase-specific classes (`--ambient`, `--focused`, `--interrogation`)
+
 ## [0.3.0] — 2026-02-25
 
 ### Changed

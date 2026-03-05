@@ -10,6 +10,7 @@ import {
   type ParsedClaim,
 } from "@/types/hallucination";
 import { Button } from "@/components/ui/Button";
+import { Spotlight } from "@/components/ui/Spotlight";
 import { useProgress } from "@/hooks/useProgress";
 import { usePassageSelection } from "@/hooks/usePassageSelection";
 
@@ -53,7 +54,15 @@ export default function PlayPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center p-4 md:p-8 relative">
-      <div className="spotlight" />
+      <Spotlight
+        phase={
+          phase === "briefing"
+            ? "ambient"
+            : phase === "investigating"
+              ? "focused"
+              : "interrogation"
+        }
+      />
 
       {/* Header bar */}
       <div className="w-full max-w-2xl flex items-center justify-between mb-6">

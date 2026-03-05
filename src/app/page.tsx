@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
+import { Spotlight } from "@/components/ui/Spotlight";
 import { StreakBadge } from "@/components/ui/StreakBadge";
 import { XPBar } from "@/components/ui/XPBar";
 import { useProgress } from "@/hooks/useProgress";
@@ -27,7 +28,7 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden">
       {/* Noir spotlight effect */}
-      <div className="spotlight" />
+      <Spotlight phase="ambient" />
 
       {/* Decorative corners — case file edges */}
       <div className="fixed top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-game-primary/40" />

@@ -50,6 +50,8 @@ npm run lint   # ESLint check
 
 Noir detective aesthetic — dark blues, reds, spotlight effects, case file UI. Inspired by Papers Please, Return of the Obra Dinn, and classic noir film.
 
+The spotlight is **phase-reactive**: a wide ambient vignette during briefings tightens into a focused desk-lamp cone while investigating, then narrows into a harsh interrogation beam with a subtle red-tinged edge pulse when the verdict drops. Transitions are smooth (0.8s ease-out) with a breathing animation during investigation.
+
 ## License
 
 MIT — by [DareDev256](https://github.com/DareDev256)
