@@ -24,6 +24,13 @@ export default function PlayPage() {
   const { current: passage, played, total, advance } = usePassageSelection();
 
   const segments = useMemo(() => parsePassage(passage.prompt), [passage]);
+  const claimMap = useMemo(() => {
+    const map = new Map<string, ParsedClaim>();
+    for (const seg of segments) {
+      if (typeof seg !== "string") map.set((seg as ParsedClaim).id, seg as ParsedClaim);
+    }
+    return map;
+  }, [segments]);
   const claimCount = useMemo(
     () => Object.keys(passage.claimAnnotations).length,
     [passage]
@@ -217,9 +224,7 @@ export default function PlayPage() {
             <div className="space-y-3 mb-8">
               {results.verdicts.map((v) => {
                 const ann = passage.claimAnnotations[v.claimId];
-                const seg = segments.find(
-                  (s) => typeof s !== "string" && (s as ParsedClaim).id === v.claimId
-                ) as ParsedClaim | undefined;
+                const seg = claimMap.get(v.claimId);
                 return (
                   <div
                     key={v.claimId}

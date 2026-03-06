@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.1] — 2026-03-06
+
+### Fixed
+- Diversity queue exclude logic: `idx > 0` silently skipped exclusion when the last-played category landed at index 0 after shuffling, causing back-to-back same-category passages ~50% of the time with 2 categories
+- Replaced O(n) `segments.find()` per verdict in results phase with a pre-built `Map<string, ParsedClaim>` for O(1) claim lookups
+
 ## [0.4.0] — 2026-03-05
 
 ### Added

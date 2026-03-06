@@ -45,7 +45,7 @@ function buildDiverseQueue(exclude?: string): HallucinationPassage[] {
   // If we know the last-played category, start with a different one
   if (exclude) {
     const idx = categories.indexOf(exclude);
-    if (idx > 0) {
+    if (idx >= 0) {
       // Move it to the end so we start with a different category
       categories.push(...categories.splice(idx, 1));
     }
