@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.2] — 2026-03-07
+
+### Security
+- Hardened all localStorage JSON parsing in `storage.ts` against prototype pollution (`__proto__`, `constructor`, `prototype` keys stripped on parse)
+- Added `validateProgress()` with full schema validation — every field type-checked, numbers clamped to safe bounds, arrays/objects capped at 10K entries to prevent memory bombs
+- FSRS card deserialization now validates each card's shape and rejects malformed entries instead of trusting raw JSON
+- Mastery and analytics parsers use `safeParseJSON` with type guards instead of raw `JSON.parse` casts
+- Sound settings validated with range clamping (volume 0-1, boolean type check) instead of blind spread
+- Added `isValidLearningEvent` type guard to reject invalid analytics events at write and read boundaries
+
 ## [0.4.1] — 2026-03-06
 
 ### Fixed

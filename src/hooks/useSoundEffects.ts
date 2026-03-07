@@ -24,7 +24,16 @@ export function useSoundEffects() {
     if (typeof window === "undefined") return DEFAULT_SETTINGS;
     try {
       const stored = localStorage.getItem("pl_sound_settings");
-      return stored ? { ...DEFAULT_SETTINGS, ...JSON.parse(stored) } : DEFAULT_SETTINGS;
+      if (!stored) return DEFAULT_SETTINGS;
+      const parsed = JSON.parse(stored);
+      if (!parsed || typeof parsed !== "object") return DEFAULT_SETTINGS;
+      return {
+        enabled: typeof parsed.enabled === "boolean" ? parsed.enabled : DEFAULT_SETTINGS.enabled,
+        sfxVolume: typeof parsed.sfxVolume === "number" && parsed.sfxVolume >= 0 && parsed.sfxVolume <= 1
+          ? parsed.sfxVolume : DEFAULT_SETTINGS.sfxVolume,
+        musicVolume: typeof parsed.musicVolume === "number" && parsed.musicVolume >= 0 && parsed.musicVolume <= 1
+          ? parsed.musicVolume : DEFAULT_SETTINGS.musicVolume,
+      };
     } catch {
       return DEFAULT_SETTINGS;
     }
