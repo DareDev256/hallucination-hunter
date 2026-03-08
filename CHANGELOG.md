@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.3] — 2026-03-08
+
+### Fixed
+- Diversity queue tail clumping: uneven category sizes (3 vs 2) caused consecutive same-category passages at the queue tail ~50% of the time
+- Round-robin now leads with the largest category and applies a post-pass declump sweep to break any remaining consecutive same-category runs
+- Exclude logic swaps to position 1 instead of pushing to end, preserving interleave balance across queue rebuilds
+- Added empty-passages guard to prevent infinite loop in `buildDiverseQueue`
+- Fixed misleading "deterministic seeded shuffle" docstring (shuffle uses `Math.random`, not a seed)
+
 ## [0.4.2] — 2026-03-07
 
 ### Security

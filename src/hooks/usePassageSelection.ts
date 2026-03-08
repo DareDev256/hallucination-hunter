@@ -14,7 +14,7 @@ import type { HallucinationPassage } from "@/types/hallucination";
  * 4. Resets the pool when all passages have been played
  */
 
-/** Deterministic shuffle using Fisher-Yates (seeded by session timestamp) */
+/** Fisher-Yates shuffle (non-deterministic) */
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -24,8 +24,33 @@ function shuffle<T>(arr: T[]): T[] {
   return copy;
 }
 
+/**
+ * De-clump consecutive same-category passages.
+ * Scans the queue and swaps offenders with the nearest different-category
+ * neighbour that won't itself create a new clump.
+ */
+function declump(queue: HallucinationPassage[]): HallucinationPassage[] {
+  const q = [...queue];
+  for (let i = 1; i < q.length; i++) {
+    if (q[i].category !== q[i - 1].category) continue;
+    // Find the closest swap candidate further ahead
+    for (let j = i + 1; j < q.length; j++) {
+      const safe =
+        q[j].category !== q[i - 1].category &&
+        (j + 1 >= q.length || q[j + 1]?.category !== q[i].category);
+      if (safe) {
+        [q[i], q[j]] = [q[j], q[i]];
+        break;
+      }
+    }
+  }
+  return q;
+}
+
 /** Build a category-interleaved queue from the full passage list */
 function buildDiverseQueue(exclude?: string): HallucinationPassage[] {
+  if (passages.length === 0) return [];
+
   const byCategory = new Map<string, HallucinationPassage[]>();
   for (const p of passages) {
     const list = byCategory.get(p.category) ?? [];
@@ -39,15 +64,19 @@ function buildDiverseQueue(exclude?: string): HallucinationPassage[] {
     shuffled.set(cat, shuffle(list));
   }
 
-  // Round-robin interleave across categories
-  const categories = shuffle([...shuffled.keys()]);
+  // Sort categories by descending size so the largest leads the round-robin,
+  // minimising tail clumping when categories are unevenly sized.
+  const categories = [...shuffled.keys()].sort(
+    (a, b) => (shuffled.get(b)!.length - shuffled.get(a)!.length)
+  );
 
-  // If we know the last-played category, start with a different one
+  // If we know the last-played category, ensure it doesn't lead
   if (exclude) {
     const idx = categories.indexOf(exclude);
-    if (idx >= 0) {
-      // Move it to the end so we start with a different category
-      categories.push(...categories.splice(idx, 1));
+    if (idx === 0 && categories.length > 1) {
+      // Swap with the second-largest instead of pushing to end,
+      // so the interleaving order stays as balanced as possible
+      [categories[0], categories[1]] = [categories[1], categories[0]];
     }
   }
 
@@ -72,7 +101,8 @@ function buildDiverseQueue(exclude?: string): HallucinationPassage[] {
     catIdx++;
   }
 
-  return queue;
+  // Final pass: break any remaining consecutive same-category runs
+  return declump(queue);
 }
 
 export interface PassageSelection {

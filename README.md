@@ -11,7 +11,7 @@ Part of the [Passionate Learning](https://github.com/DareDev256) game series (Ga
 3. Submit your verdict — the game reveals which claims were true vs fabricated
 4. Score based on precision AND recall (trigger-happy flagging is punished)
 
-Passages are served in **diversity-picked order** — categories alternate so you never see the same type back-to-back, with shuffling within each category for variety. The exclude logic ensures queue rebuilds always start with a different category than the last passage played.
+Passages are served in **diversity-picked order** — categories are interleaved via size-sorted round-robin (largest category leads to prevent tail clumping), shuffled within each category, and run through a post-pass declump sweep to guarantee no consecutive same-category passages. Queue rebuilds swap the last-played category to second position to maintain interleave balance.
 
 ## Scoring
 
