@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.4] — 2026-03-08
+
+### Added
+- Unit test suite (23 tests) covering diversity-queue logic (`shuffle`, `declump`, `buildDiverseQueue`), passage parser, and scoring engine
+- Vitest test runner with TypeScript path alias support
+- `npm run test` script
+- Exported pure functions from `usePassageSelection` for testability; `buildDiverseQueue` now accepts an optional passage pool parameter
+
 ## [0.4.3] — 2026-03-08
 
 ### Fixed

@@ -15,7 +15,7 @@ import type { HallucinationPassage } from "@/types/hallucination";
  */
 
 /** Fisher-Yates shuffle (non-deterministic) */
-function shuffle<T>(arr: T[]): T[] {
+export function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -29,7 +29,7 @@ function shuffle<T>(arr: T[]): T[] {
  * Scans the queue and swaps offenders with the nearest different-category
  * neighbour that won't itself create a new clump.
  */
-function declump(queue: HallucinationPassage[]): HallucinationPassage[] {
+export function declump(queue: HallucinationPassage[]): HallucinationPassage[] {
   const q = [...queue];
   for (let i = 1; i < q.length; i++) {
     if (q[i].category !== q[i - 1].category) continue;
@@ -48,11 +48,14 @@ function declump(queue: HallucinationPassage[]): HallucinationPassage[] {
 }
 
 /** Build a category-interleaved queue from the full passage list */
-function buildDiverseQueue(exclude?: string): HallucinationPassage[] {
-  if (passages.length === 0) return [];
+export function buildDiverseQueue(
+  exclude?: string,
+  pool: HallucinationPassage[] = passages
+): HallucinationPassage[] {
+  if (pool.length === 0) return [];
 
   const byCategory = new Map<string, HallucinationPassage[]>();
-  for (const p of passages) {
+  for (const p of pool) {
     const list = byCategory.get(p.category) ?? [];
     list.push(p);
     byCategory.set(p.category, list);
@@ -84,7 +87,7 @@ function buildDiverseQueue(exclude?: string): HallucinationPassage[] {
   const iterators = new Map<string, number>();
   for (const cat of categories) iterators.set(cat, 0);
 
-  let remaining = passages.length;
+  let remaining = pool.length;
   let catIdx = 0;
 
   while (remaining > 0) {

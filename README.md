@@ -44,6 +44,7 @@ npm install
 npm run dev    # http://localhost:3000
 npm run build  # Production build
 npm run lint   # ESLint check
+npm run test   # Unit tests (Vitest)
 ```
 
 ## Theme
