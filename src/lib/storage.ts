@@ -9,7 +9,6 @@ const STORAGE_KEY = `${GAME_ID}_progress`;
 const LAST_PLAYED_KEY = `${GAME_ID}_last_played`;
 const MASTERY_KEY = `${GAME_ID}_mastery`;
 const FSRS_KEY = `${GAME_ID}_fsrs_cards`;
-const _STREAK_FREEZE_KEY = `${GAME_ID}_streak_freezes`; // reserved for future use
 const ANALYTICS_KEY = `${GAME_ID}_analytics`;
 
 // ─── Security: Safe JSON Parse ───

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5] — 2026-03-10
+
+### Fixed
+- Timer progress bar: guarded against `duration=0` which produced `Infinity%` CSS width (silent visual corruption on the bar element)
+- Results verdict: added null-safe access for `claimAnnotations` lookup preventing runtime crash if a verdict references a missing claim ID
+- Removed unused `_STREAK_FREEZE_KEY` constant that triggered ESLint no-unused-vars warning (streak freezes are tracked in `UserProgress`, not a standalone key)
+
 ## [0.4.4] — 2026-03-08
 
 ### Added

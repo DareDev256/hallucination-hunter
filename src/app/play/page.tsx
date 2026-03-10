@@ -249,7 +249,7 @@ export default function PlayPage() {
                       &ldquo;{seg?.text}&rdquo;
                     </p>
                     <p className="font-mono text-[10px] text-game-accent/40 italic">
-                      {ann.explanation}
+                      {ann?.explanation ?? "No explanation available."}
                     </p>
                   </div>
                 );
