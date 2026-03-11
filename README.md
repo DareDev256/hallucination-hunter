@@ -34,6 +34,7 @@ More categories coming: Number Hallucinations, Citation Hallucinations, Subtle C
 - Next.js 16 + React 19 + TypeScript (strict)
 - Tailwind CSS v4 (CSS-first `@theme inline`)
 - Framer Motion for animations
+- Phase-based component architecture (briefing → investigating → results as isolated components)
 - localStorage persistence (SSR-safe, schema-validated with prototype pollution protection, zero dead code)
 - Zero API keys — all content is pre-written
 

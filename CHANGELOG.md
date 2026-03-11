@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0] — 2026-03-11
+
+### Changed
+- Extracted play page into three phase components: `BriefingPhase`, `InvestigatingPhase`, `ResultsPhase`
+- Play page reduced from 293 → 95 lines — now pure orchestration (state + routing between phases)
+- Shared `phaseMotion` config object replaces duplicated Framer Motion props across all three phases
+- Spotlight phase mapping extracted to a `SPOTLIGHT_MAP` constant, eliminating nested ternary
+- Verdict label strings extracted to `VERDICT_LABELS` lookup in `ResultsPhase`, replacing inline ternary chain
+
 ## [0.4.5] — 2026-03-10
 
 ### Fixed
