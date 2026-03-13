@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@fontsource/press-start-2p";
 import "./globals.css";
+import { ProgressProvider } from "@/components/ProgressProvider";
 
 // OVERRIDE per game
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-game-black antialiased">
         <div className="crt-overlay" />
-        {children}
+        <ProgressProvider>{children}</ProgressProvider>
       </body>
     </html>
   );

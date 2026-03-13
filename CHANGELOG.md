@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] — 2026-03-13
+
+### Changed
+- Replaced per-component `useProgress` hook (independent `useState` copies in 3 route pages) with a single `ProgressProvider` context backed by `useReducer`
+- All progress mutations now go through a serialized `mutate()` wrapper that re-reads from localStorage as the source of truth, preventing React 18/19 batching from causing stale state across pages
+- `useProgress.ts` hook file is now a thin re-export from the provider for import path compatibility
+- `isCategoryUnlocked` accepts categories as a parameter instead of requiring them at hook construction time
+
+### Added
+- Cross-tab sync via `storage` event listener — progress changes in one tab propagate to all other open tabs automatically
+- `AbortController` guards on both initial load and storage listener for clean teardown on unmount
+- Error boundary: `useProgress()` throws a descriptive error if used outside `<ProgressProvider>`
+
 ## [0.5.0] — 2026-03-11
 
 ### Changed

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/Button";
 
 export default function CategoriesPage() {
   const { progress, isLoading, isLevelUnlocked, isCategoryUnlocked } =
-    useProgress(categories);
+    useProgress();
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   if (isLoading) {
@@ -94,7 +94,7 @@ export default function CategoriesPage() {
       {/* Category grid */}
       <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
         {categories.map((category, catIndex) => {
-          const unlocked = isCategoryUnlocked(category.id);
+          const unlocked = isCategoryUnlocked(category.id, categories);
           const { completed, total, percent } = getCategoryCompletion(
             category.id
           );
