@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.1] — 2026-03-14
+
+### Security
+- Added HTTP security headers via `next.config.ts`: Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- Hardened all localStorage write functions (`addXP`, `completeLevel`, `updateItemScore`, `saveFSRSCard`, `recordMasteryAttempt`, `recordLearningEvent`) with input validation — NaN/Infinity rejection, control character stripping, range clamping
+- Added `sanitizeId()` utility that strips control characters (U+0000–U+001F, U+007F–U+009F) and caps length on all string identifiers before storage
+- `saveFSRSCard` now validates and clamps all numeric fields before write and enforces a 10K card cap to prevent storage bombs
+- `recordLearningEvent` rebuilds the event object from scratch with sanitized fields, preventing property injection from tainted upstream callers
+- Added 16-test input validation suite covering NaN, Infinity, control chars, empty IDs, and field clamping across all write functions
+
 ## [0.6.0] — 2026-03-13
 
 ### Changed

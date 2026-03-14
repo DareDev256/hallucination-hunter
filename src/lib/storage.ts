@@ -118,8 +118,13 @@ export function updateProgress(updates: Partial<UserProgress>): UserProgress {
 // 1x on first correct, 2x on 7-day recall, 3x on 30-day recall
 
 export function addXP(amount: number, multiplier = 1): UserProgress {
+  // Validate inputs — reject NaN, Infinity, negative XP grants
+  const safeAmount = safeInt(amount, 0, -1000, 10_000);
+  const safeMult = typeof multiplier === "number" && Number.isFinite(multiplier)
+    ? Math.max(0, Math.min(multiplier, 10))
+    : 1;
   const current = getProgress();
-  const newXP = current.xp + Math.round(amount * multiplier);
+  const newXP = safeInt(current.xp + Math.round(safeAmount * safeMult), current.xp);
   const newLevel = Math.floor(newXP / 100) + 1;
   return updateProgress({ xp: newXP, level: newLevel });
 }
@@ -134,9 +139,19 @@ export function getRecallMultiplier(itemId: string): number {
   return 1;
 }
 
+/** Sanitize a string ID — strip control chars, cap length */
+function sanitizeId(id: string, maxLen = 200): string {
+  if (typeof id !== "string") return "";
+  // Strip control characters (U+0000–U+001F, U+007F–U+009F) and trim
+  return id.replace(/[\x00-\x1f\x7f-\x9f]/g, "").trim().slice(0, maxLen);
+}
+
 export function completeLevel(categoryId: string, levelId: number): UserProgress {
+  const safeCat = sanitizeId(categoryId, 100);
+  const safeLevel = safeInt(levelId, -1, 0, 10_000);
+  if (!safeCat || safeLevel < 0) return getProgress(); // reject invalid input
   const current = getProgress();
-  const levelKey = `${categoryId}-${levelId}`;
+  const levelKey = `${safeCat}-${safeLevel}`;
   if (!current.completedLevels.includes(levelKey)) {
     // Award streak freeze every 10 levels
     const newCompleted = [...current.completedLevels, levelKey];
@@ -150,8 +165,11 @@ export function completeLevel(categoryId: string, levelId: number): UserProgress
 }
 
 export function updateItemScore(itemId: string, isCorrect: boolean): UserProgress {
+  const safeId = sanitizeId(itemId);
+  if (!safeId) return getProgress(); // reject empty/invalid IDs
+  if (typeof isCorrect !== "boolean") return getProgress();
   const current = getProgress();
-  const existing = current.itemScores[itemId] || {
+  const existing = current.itemScores[safeId] || {
     correct: 0,
     incorrect: 0,
     lastSeen: 0,
@@ -159,7 +177,7 @@ export function updateItemScore(itemId: string, isCorrect: boolean): UserProgres
   return updateProgress({
     itemScores: {
       ...current.itemScores,
-      [itemId]: {
+      [safeId]: {
         correct: existing.correct + (isCorrect ? 1 : 0),
         incorrect: existing.incorrect + (isCorrect ? 0 : 1),
         lastSeen: Date.now(),
@@ -210,14 +228,32 @@ export function getFSRSCards(): FSRSCard[] {
   }
 }
 
+/** Validate an FSRS card before writing — clamp all numeric fields */
+function validateFSRSCard(card: FSRSCard): FSRSCard | null {
+  const itemId = sanitizeId(card.itemId);
+  if (!itemId) return null;
+  return {
+    itemId,
+    due: safeInt(card.due, 0, 0, Number.MAX_SAFE_INTEGER),
+    stability: safeInt(card.stability, 0),
+    difficulty: safeInt(card.difficulty, 0),
+    reps: safeInt(card.reps, 0),
+    lapses: safeInt(card.lapses, 0),
+    lastReview: safeInt(card.lastReview, 0, 0, Number.MAX_SAFE_INTEGER),
+  };
+}
+
 export function saveFSRSCard(card: FSRSCard): void {
   if (typeof window === "undefined") return;
+  const validated = validateFSRSCard(card);
+  if (!validated) return; // reject malformed cards
   const cards = getFSRSCards();
-  const idx = cards.findIndex((c) => c.itemId === card.itemId);
+  const idx = cards.findIndex((c) => c.itemId === validated.itemId);
   if (idx >= 0) {
-    cards[idx] = card;
+    cards[idx] = validated;
   } else {
-    cards.push(card);
+    if (cards.length >= 10_000) return; // cap total cards to prevent storage bombs
+    cards.push(validated);
   }
   localStorage.setItem(FSRS_KEY, JSON.stringify(cards));
 }
@@ -287,17 +323,21 @@ interface MasteryAttempt {
 
 export function recordMasteryAttempt(levelKey: string, accuracy: number): void {
   if (typeof window === "undefined") return;
+  const safeKey = sanitizeId(levelKey, 300);
+  if (!safeKey) return; // reject empty keys
+  const safeAccuracy = safeInt(accuracy, -1, 0, 100);
+  if (safeAccuracy < 0) return; // reject non-numeric accuracy
   try {
     const stored = localStorage.getItem(MASTERY_KEY);
     const data = safeParseJSON<Record<string, unknown>>(stored, {});
-    const raw = data[levelKey];
+    const raw = data[safeKey];
     const attempts: MasteryAttempt[] = Array.isArray(raw)
       ? raw.filter((a): a is MasteryAttempt =>
           a && typeof a === "object" && typeof a.accuracy === "number" && typeof a.timestamp === "number"
         )
       : [];
-    attempts.push({ accuracy: safeInt(accuracy, 0, 0, 100), timestamp: Date.now() });
-    data[levelKey] = attempts.slice(-5);
+    attempts.push({ accuracy: safeAccuracy, timestamp: Date.now() });
+    data[safeKey] = attempts.slice(-5);
     localStorage.setItem(MASTERY_KEY, JSON.stringify(data));
   } catch {
     // Silently fail on storage errors
@@ -349,14 +389,29 @@ function isValidLearningEvent(e: unknown): e is LearningEvent {
 
 export function recordLearningEvent(event: LearningEvent): void {
   if (typeof window === "undefined") return;
+  if (!event || typeof event !== "object") return;
   if (!VALID_EVENT_TYPES.has(event.type)) return; // reject invalid event types
+  const safeItemId = sanitizeId(event.itemId);
+  if (!safeItemId) return; // reject empty item IDs
+  // Rebuild event with sanitized fields to prevent property injection
+  const sanitized: LearningEvent = {
+    type: event.type,
+    itemId: safeItemId,
+    timestamp: safeInt(event.timestamp, Date.now(), 0, Number.MAX_SAFE_INTEGER),
+    ...(event.daysSinceLastSeen !== undefined && {
+      daysSinceLastSeen: safeInt(event.daysSinceLastSeen, 0, 0, 36500),
+    }),
+    ...(event.accuracy !== undefined && {
+      accuracy: safeInt(event.accuracy, 0, 0, 100),
+    }),
+  };
   try {
     const stored = localStorage.getItem(ANALYTICS_KEY);
     const parsed = safeParseJSON<unknown>(stored, null);
     const events: LearningEvent[] = Array.isArray(parsed)
       ? (parsed as unknown[]).filter(isValidLearningEvent)
       : [];
-    events.push(event);
+    events.push(sanitized);
     // Keep last 1000 events
     const trimmed = events.slice(-1000);
     localStorage.setItem(ANALYTICS_KEY, JSON.stringify(trimmed));

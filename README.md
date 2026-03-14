@@ -36,7 +36,8 @@ More categories coming: Number Hallucinations, Citation Hallucinations, Subtle C
 - Framer Motion for animations
 - Phase-based component architecture (briefing → investigating → results as isolated components)
 - Centralized `ProgressProvider` context — single `useReducer` source of truth with cross-tab sync via `storage` events
-- localStorage persistence (SSR-safe, schema-validated with prototype pollution protection, zero dead code)
+- localStorage persistence (SSR-safe, schema-validated with prototype pollution protection, write-path input validation, zero dead code)
+- HTTP security headers: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 - Zero API keys — all content is pre-written
 
 ## Getting Started
